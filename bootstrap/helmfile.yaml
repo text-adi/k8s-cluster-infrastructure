@@ -1,0 +1,20 @@
+---
+# Helmfile для розгортання Argo CD через Helm-чарт argoproj/argo-helm.
+# Документація: https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+
+repositories:
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+
+helmDefaults:
+  wait: true
+  timeout: 600
+  createNamespace: true
+
+releases:
+  - name: argocd
+    namespace: argocd
+    chart: argo/argo-cd
+    version: 10.8.2
+    values:
+      - ./values/argocd.yaml.gotmpl
