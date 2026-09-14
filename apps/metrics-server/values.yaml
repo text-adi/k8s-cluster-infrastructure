@@ -1,0 +1,11 @@
+---
+# Значення передаються у subchart "metrics-server" (див. Chart.yaml -> dependencies).
+# Наразі повторюють дефолти чарту 3.14.0 — так само, як зараз вручну встановлений
+# helm-реліз "metrics-server" у ns monitoring (helm get values metrics-server -n monitoring).
+# Повний список опцій:
+# https://github.com/kubernetes-sigs/metrics-server/blob/metrics-server-helm-chart-3.14.0/charts/metrics-server/values.yaml
+metrics-server:
+  apiService:
+    insecureSkipTLSVerify: false
+  tls:
+    type: "helm"
