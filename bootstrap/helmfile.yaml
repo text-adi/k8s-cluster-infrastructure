@@ -18,3 +18,9 @@ releases:
     version: 10.8.2
     values:
       - ./values/argocd.yaml.gotmpl
+
+  - name: argocd-root-app
+    namespace: argocd
+    needs:
+      - argocd
+    chart: ../charts/argocd-root-app

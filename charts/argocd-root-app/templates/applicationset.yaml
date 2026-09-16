@@ -14,19 +14,17 @@ spec:
           - path: 'apps/*' # Сканує кожен підкаталог у папці apps
   template:
     metadata:
-      # path.basename повертає назву папки (наприклад, "metrics-server")
-      name: '{{ .path.basename }}'
+      name: '{{ `{{ .path.basename }}` }}'
       namespace: argocd
     spec:
       project: default
       source:
         repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
         targetRevision: HEAD
-        path: '{{ .path.path }}' # apps/metrics-server
+        path: '{{ `{{ .path.path }}` }}'
       destination:
         server: 'https://kubernetes.default.svc'
-        # За замовчуванням деплоїть в однойменний namespace
-        namespace: '{{ .path.basename }}'
+        namespace: '{{ `{{ .path.basename }}` }}'
       syncPolicy:
         automated:
           prune: true
