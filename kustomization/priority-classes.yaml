@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/priority-classes
+    path: infrastructure/priority-classes/
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring

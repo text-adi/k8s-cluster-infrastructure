@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
   - priority-classes.yaml
-
   - metrics-server.yaml
   - victoria-metrics-operator.yaml
   - victoria-metrics-operator-crds.yaml
