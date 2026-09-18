@@ -4,6 +4,3 @@
 # helm-реліз "metrics-server" у ns monitoring (helm get values metrics-server -n monitoring).
 # Повний список опцій:
 # https://github.com/kubernetes-sigs/metrics-server/blob/metrics-server-helm-chart-3.14.0/charts/metrics-server/values.yaml
-victoria-metrics-operator:
-  crds:
-    enabled: false
