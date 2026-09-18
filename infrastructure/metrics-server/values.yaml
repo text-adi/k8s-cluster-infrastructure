@@ -23,7 +23,7 @@ metrics-server:
       labelSelector:
         matchLabels:
           app.kubernetes.io/name: metrics-server
-          app.kubernetes.io/instance: '{{ .Release.Name }}'
+          app.kubernetes.io/instance: metrics-server
       matchLabelKeys:
         - pod-template-hash
 
@@ -33,6 +33,6 @@ metrics-server:
       labelSelector:
         matchLabels:
           app.kubernetes.io/name: metrics-server
-          app.kubernetes.io/instance: '{{ .Release.Name }}'
+          app.kubernetes.io/instance: metrics-server
       matchLabelKeys:
         - pod-template-hash
