@@ -1,0 +1,14 @@
+---
+# "Обгортковий" (wrapper) чарт над офіційним chart'ом metrics-server.
+# ApplicationSet cluster-apps (bootstrap/root-app.yaml) сканує apps/* і за наявності
+# Chart.yaml трактує цей каталог як Helm-джерело, деплоячи у namespace "metrics-server".
+#
+# Джерело: https://github.com/kubernetes-sigs/metrics-server/tree/master/charts/metrics-server
+apiVersion: v2
+name: victoria-metrics-operator
+description: Wrapper chart to deploy upstream victoria-metrics via Argo CD
+version: 0.1.0
+dependencies:
+  - name: victoria-metrics-operator
+    version: 0.67.3
+    repository: https://victoriametrics.github.io/helm-charts/
