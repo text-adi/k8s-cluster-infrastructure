@@ -13,6 +13,8 @@ victoria-metrics-operator:
       cpu: 80m
       memory: 50Mi
 
+  priorityClassName: "platform-critical"
+
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: topology.kubernetes.io/zone
