@@ -1,9 +1,35 @@
 ---
-# Значення передаються у subchart "metrics-server" (див. Chart.yaml -> dependencies).
-# Наразі повторюють дефолти чарту 3.14.0 — так само, як зараз вручну встановлений
-# helm-реліз "metrics-server" у ns monitoring (helm get values metrics-server -n monitoring).
-# Повний список опцій:
-# https://github.com/kubernetes-sigs/metrics-server/blob/metrics-server-helm-chart-3.14.0/charts/metrics-server/values.yaml
 victoria-metrics-operator:
   crds:
     enabled: false
+
+  replicaCount: 2
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  resources:
+    requests:
+      cpu: 80m
+      memory: 50Mi
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: victoria-metrics-operator
+          app.kubernetes.io/instance: victoria-metrics-operator
+      matchLabelKeys:
+        - pod-template-hash
+
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: victoria-metrics-operator
+          app.kubernetes.io/instance: victoria-metrics-operator
+      matchLabelKeys:
+        - pod-template-hash
