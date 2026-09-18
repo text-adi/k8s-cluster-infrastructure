@@ -3,4 +3,5 @@
 # Downloaded Helm subchart archives — Argo CD's repo-server rebuilds these
 # from Chart.lock at sync time, so they don't belong in git.
 apps/*/charts/
+infrastructure/*/charts/
 charts/*/charts/
