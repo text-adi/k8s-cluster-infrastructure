@@ -1,3 +1,6 @@
 ---
 # Кастомні значення для чарту argo/argo-cd.
 # Повний список опцій: https://github.com/argoproj/argo-helm/blob/argo-cd-10.8.2/charts/argo-cd/values.yaml
+crds:
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true,CreateNamespace=true,ApplyOutOfSyncOnly=true
