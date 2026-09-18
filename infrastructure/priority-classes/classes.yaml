@@ -1,0 +1,31 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-critical
+value: 10000000
+globalDefault: false
+description: "For custom critical app: Ingress NGINX, Cert-Manager, Argo CD"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false
+description: "For prod service"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: default-priority
+value: 100000
+globalDefault: true
+description: "Default parameters"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: low-priority
+value: 1000
+globalDefault: false
+description: "For pod with low priority: CI/CD runners, CronJobs, parsers, background backup"
