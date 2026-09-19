@@ -9,6 +9,6 @@ helmfile apply -f bootstrap/helmfile.yaml
 
 [//]: # (```bash)
 
-[//]: # (kubectl kustomize kustomization | kubectl apply -f -)
+[//]: # (kubectl kustomize infrastructure/kustomize | kubectl apply -f -)
 
 [//]: # (```)

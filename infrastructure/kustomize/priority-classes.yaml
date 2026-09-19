@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: victoria-metrics-operator-crds
+  name: priority-classes
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "-10"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -12,12 +12,9 @@ spec:
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/victoria-metrics-operator-crds
-    helm:
-      releaseName: victoria-metrics-operator-crds
+    path: infrastructure/charts/priority-classes/
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: monitoring
   syncPolicy:
     automated:
       prune: true

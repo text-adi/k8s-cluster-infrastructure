@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/victoria-metrics-operator
+    path: infrastructure/charts/victoria-metrics-operator
     helm:
       releaseName: victoria-metrics-operator
   destination:
