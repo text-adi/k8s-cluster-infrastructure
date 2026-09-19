@@ -1,0 +1,14 @@
+---
+# "Обгортковий" (wrapper) чарт над офіційним chart'ом Envoy Gateway CRDs.
+# Встановлює CRD-и envoy-gateway (envoyproxies.gateway.envoyproxy.io тощо), яких не
+# вистачає для роботи Application "envoy-gateway".
+#
+# Джерело: https://github.com/envoyproxy/gateway/tree/main/charts/gateway-crds-helm
+apiVersion: v2
+name: envoy-gateway-crds
+description: Wrapper chart to deploy upstream Envoy Gateway CRDs via Argo CD
+version: 0.1.0
+dependencies:
+  - name: gateway-crds-helm
+    version: v1.5.9
+    repository: oci://docker.io/envoyproxy

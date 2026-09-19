@@ -6,4 +6,5 @@ resources:
   - metrics-server.yaml
   - victoria-metrics-operator.yaml
   - victoria-metrics-operator-crds.yaml
+  - envoy-gateway-crds.yaml
   - envoy-gateway.yaml

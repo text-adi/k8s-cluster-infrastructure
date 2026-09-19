@@ -1,0 +1,12 @@
+---
+# Значення передаються у subchart "gateway-crds-helm" (див. Chart.yaml -> dependencies).
+# Повний список опцій: https://github.com/envoyproxy/gateway/blob/gateway-helm-v1.5.9/charts/gateway-crds-helm/values.yaml
+gateway-crds-helm:
+  crds:
+    # Gateway API CRD-и (gateways.gateway.networking.k8s.io тощо) вже встановлені
+    # в кластері окремо (не через Helm/Argo) — не забираємо їх під керування цим чартом.
+    gatewayAPI:
+      enabled: false
+    # CRD-и самого Envoy Gateway (envoyproxies.gateway.envoyproxy.io тощо).
+    envoyGateway:
+      enabled: true
