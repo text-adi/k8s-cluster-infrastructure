@@ -1,0 +1,14 @@
+---
+# "Обгортковий" (wrapper) чарт над офіційним chart'ом Envoy Gateway.
+# ApplicationSet cluster-apps (bootstrap/root-app.yaml) сканує apps/* і за наявності
+# Chart.yaml трактує цей каталог як Helm-джерело, деплоячи у namespace "envoy-gateway-system".
+#
+# Джерело: https://github.com/envoyproxy/gateway/tree/main/charts/gateway-helm
+apiVersion: v2
+name: envoy-gateway
+description: Wrapper chart to deploy upstream Envoy Gateway via Argo CD
+version: 0.1.0
+dependencies:
+  - name: gateway-helm
+    version: v1.5.9
+    repository: oci://docker.io/envoyproxy
