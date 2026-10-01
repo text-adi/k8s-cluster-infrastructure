@@ -4,6 +4,9 @@ kind: Kustomization
 resources:
   - priority-classes.yaml
   - monitoring/metrics-server.yaml
+  - monitoring/kube-state-metrics.yaml
+  - monitoring/prometheus-node-exporter.yaml
+  - vpa.yaml
   - monitoring/victoria-metrics-operator.yaml
   - monitoring/victoria-metrics-operator-crds.yaml
   - envoy-gateway-crds.yaml
