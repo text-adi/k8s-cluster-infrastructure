@@ -6,8 +6,6 @@ metadata:
 spec:
   retentionPeriod: "30d"
   storage:
-    volumeClaimTemplate:
-      spec:
-        resources:
-          requests:
-            storage: 20Gi
+    resources:
+      requests:
+        storage: 20Gi
