@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: prometheus-operator-crds
+description: Wrapper chart to deploy upstream prometheus-operator-crds via Argo CD
+version: 0.1.0
+dependencies:
+  - name: prometheus-operator-crds
+    version: 32.0.1
+    repository: https://victoriametrics.github.io/helm-charts/

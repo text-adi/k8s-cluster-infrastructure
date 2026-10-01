@@ -1,0 +1,9 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: vm-agent
+spec:
+
+  serviceAccountName: vm-agent
+  priorityClassName: "platform-critical"
+  replicas: 2
