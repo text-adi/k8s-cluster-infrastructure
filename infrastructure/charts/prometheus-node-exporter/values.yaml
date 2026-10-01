@@ -5,3 +5,7 @@ prometheus-node-exporter:
   tolerations:
     - operator: "Exists"
   priorityClassName: "platform-critical"
+
+  prometheus:
+    monitor:
+      enabled: true

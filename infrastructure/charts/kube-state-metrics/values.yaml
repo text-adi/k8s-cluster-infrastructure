@@ -26,3 +26,7 @@ kube-state-metrics:
           app.kubernetes.io/name: kube-state-metrics
       matchLabelKeys:
         - pod-template-hash
+
+  prometheus:
+    monitor:
+      enabled: true
