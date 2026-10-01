@@ -11,8 +11,6 @@ spec:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
     path: infrastructure/charts/victoria-metrics-stack
-    helm:
-      releaseName: victoria-metrics-stack
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
