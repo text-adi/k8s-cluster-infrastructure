@@ -7,4 +7,4 @@ spec:
   priorityClassName: "platform-critical"
   statefulMode: true
   remoteWrite:
-    - url: "http://victoria-metrics-cluster-insert.monitoring.svc.cluster.local:8480"
+    - url: "http://victoria-storage.monitoring.svc.cluster.local:8428/api/v1/write"
