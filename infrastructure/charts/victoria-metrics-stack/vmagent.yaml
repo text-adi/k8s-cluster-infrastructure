@@ -7,3 +7,5 @@ spec:
   serviceAccountName: vm-agent
   priorityClassName: "platform-critical"
   statefulMode: true
+  remoteWrite:
+    - url: "http://victoria-metrics-cluster-insert.monitoring.svc.cluster.local:8480"
