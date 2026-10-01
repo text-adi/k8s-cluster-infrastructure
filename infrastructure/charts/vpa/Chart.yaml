@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: vertical-pod-autoscaler
+description: Wrapper chart to deploy upstream vertical-pod-autoscaler via Argo CD
+version: 0.1.0
+dependencies:
+  - name: vertical-pod-autoscaler
+    version: 0.13.0
+    repository: https://kubernetes.github.io/autoscaler

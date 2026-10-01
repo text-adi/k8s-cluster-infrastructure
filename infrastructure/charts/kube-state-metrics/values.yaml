@@ -1,20 +1,11 @@
 ---
-metrics-server:
-  apiService:
-    insecureSkipTLSVerify: false
-  tls:
-    type: "helm"
+kube-state-metrics:
+  priorityClassName: "platform-critical"
 
   podDisruptionBudget:
     enabled: true
     minAvailable: 50%
     unhealthyPodEvictionPolicy: AlwaysAllow
-
-  replicas: 2
-  priorityClassName: "platform-critical"
-  resources:
-    limits:
-      memory: 300Mi
 
   topologySpreadConstraints:
     - maxSkew: 1
@@ -22,8 +13,7 @@ metrics-server:
       whenUnsatisfiable: ScheduleAnyway
       labelSelector:
         matchLabels:
-          app.kubernetes.io/name: metrics-server
-          app.kubernetes.io/instance: metrics-server
+          app.kubernetes.io/name: kube-state-metrics
       matchLabelKeys:
         - pod-template-hash
 
@@ -32,7 +22,6 @@ metrics-server:
       whenUnsatisfiable: ScheduleAnyway
       labelSelector:
         matchLabels:
-          app.kubernetes.io/name: metrics-server
-          app.kubernetes.io/instance: metrics-server
+          app.kubernetes.io/name: kube-state-metrics
       matchLabelKeys:
         - pod-template-hash

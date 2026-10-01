@@ -3,8 +3,8 @@ kind: Kustomization
 
 resources:
   - priority-classes.yaml
-  - metrics-server.yaml
-  - victoria-metrics-operator.yaml
-  - victoria-metrics-operator-crds.yaml
+  - monitoring/metrics-server.yaml
+  - monitoring/victoria-metrics-operator.yaml
+  - monitoring/victoria-metrics-operator-crds.yaml
   - envoy-gateway-crds.yaml
   - envoy-gateway.yaml
