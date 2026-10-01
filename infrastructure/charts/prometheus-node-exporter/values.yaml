@@ -3,12 +3,5 @@ prometheus-node-exporter:
   fullnameOverride: "node-exporter"
 
   tolerations:
-    - key: "type"
-      operator: "Equal"
-      value: "cache"
-      effect: "NoExecute"
-    - key: "type"
-      operator: "Equal"
-      value: "database"
-      effect: "NoExecute"
+    - operator: "Exists"
   priorityClassName: "platform-critical"
