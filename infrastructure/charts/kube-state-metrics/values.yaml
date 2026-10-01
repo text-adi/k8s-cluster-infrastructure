@@ -3,7 +3,6 @@ kube-state-metrics:
   priorityClassName: "platform-critical"
 
   podDisruptionBudget:
-    enabled: true
     minAvailable: 50%
     unhealthyPodEvictionPolicy: AlwaysAllow
 
