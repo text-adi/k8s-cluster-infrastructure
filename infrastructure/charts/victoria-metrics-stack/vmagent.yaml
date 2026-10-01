@@ -4,7 +4,6 @@ metadata:
   name: vm-agent
 spec:
   selectAllByDefault: true
-  serviceAccountName: vm-agent
   priorityClassName: "platform-critical"
   statefulMode: true
   remoteWrite:
