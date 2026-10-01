@@ -10,5 +10,6 @@ resources:
   - monitoring/victoria-metrics-operator.yaml
   - monitoring/victoria-metrics-operator-crds.yaml
   - monitoring/prometheus-operator-crds.yaml
+  - monitoring/victoria-metrics-stack.yaml
   - envoy-gateway-crds.yaml
   - envoy-gateway.yaml
