@@ -13,7 +13,6 @@ spec:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
     path: infrastructure/charts/priority-classes
-    kustomize: {}
   destination:
     server: 'https://kubernetes.default.svc'
   syncPolicy:
