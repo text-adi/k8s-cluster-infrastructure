@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: grafana-operator
+description: Wrapper chart to deploy upstream grafana via Argo CD
+version: 0.1.0
+dependencies:
+  - name: grafana-operator
+    version: 5.25.0
+    repository: https://grafana.github.io/helm-charts
