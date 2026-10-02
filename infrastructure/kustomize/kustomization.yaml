@@ -13,4 +13,4 @@ resources:
   - monitoring/victoria-metrics-stack.yaml
   - envoy-gateway-crds.yaml
   - envoy-gateway.yaml
-  - grafana.yaml
+  - grafana-operator.yaml

@@ -15,7 +15,7 @@ spec:
       releaseName: grafana-operator
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: grafana
+    namespace: grafana-operator
   syncPolicy:
     automated:
       prune: true
