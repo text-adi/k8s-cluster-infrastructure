@@ -17,3 +17,4 @@ resources:
   - grafana.yaml
   - vault-secrets-operator.yaml
   - vault.yaml
+  - cert-manager.yaml
