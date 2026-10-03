@@ -1,0 +1,5 @@
+---
+argo-cd:
+  configs:
+    cm:
+      timeout.reconciliation: 15s

@@ -1,24 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-infrastructure
-  namespace: '{{ .Release.Namespace }}'
+  name: argocd
+  namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
-    ref: dev
-    path: 'infrastructure/kustomize'
+    targetRevision: dev
+    path: infrastructure/charts/argocd
+    helm:
+      releaseName: argocd
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: '{{ .Release.Namespace }}'
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
-      - CreateNamespace=true
+      - CreateNamespace=false
       - ApplyOutOfSyncOnly=true
+      - Force=true

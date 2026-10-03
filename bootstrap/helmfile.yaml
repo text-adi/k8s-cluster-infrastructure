@@ -16,8 +16,6 @@ releases:
     namespace: argocd
     chart: argo/argo-cd
     version: 10.8.2
-    values:
-      - ./values/argocd.yaml.gotmpl
 
   - name: argocd-root-app
     namespace: argocd
