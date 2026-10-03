@@ -1,0 +1,19 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: 'vm-single-datasource'
+  namespace: 'grafana'
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    access: proxy
+    database: "0" # Для VictoriaMetrics зазвичай використовується "0" або залишається пустим
+    jsonData:
+      timeInterval: 5s
+      tlsSkipVerify: true
+      httpMethod: POST # Рекомендується для VictoriaMetrics для оптимізації важких запитів
+    name: 'vm-single-datasource'
+    type: prometheus
+    url: 'http://vmsingle-victoria-storage.monitoring.svc.cluster.local:8428'
