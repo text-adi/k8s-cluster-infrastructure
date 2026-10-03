@@ -6,26 +6,26 @@ kube-state-metrics:
     minAvailable: 50%
     unhealthyPodEvictionPolicy: AlwaysAllow
 
-  replicas: 2
+  replicas: 1
 
-  topologySpreadConstraints:
-    - maxSkew: 1
-      topologyKey: topology.kubernetes.io/zone
-      whenUnsatisfiable: ScheduleAnyway
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/name: kube-state-metrics
-      matchLabelKeys:
-        - pod-template-hash
-
-    - maxSkew: 1
-      topologyKey: kubernetes.io/hostname
-      whenUnsatisfiable: ScheduleAnyway
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/name: kube-state-metrics
-      matchLabelKeys:
-        - pod-template-hash
+#  topologySpreadConstraints:
+#    - maxSkew: 1
+#      topologyKey: topology.kubernetes.io/zone
+#      whenUnsatisfiable: ScheduleAnyway
+#      labelSelector:
+#        matchLabels:
+#          app.kubernetes.io/name: kube-state-metrics
+#      matchLabelKeys:
+#        - pod-template-hash
+#
+#    - maxSkew: 1
+#      topologyKey: kubernetes.io/hostname
+#      whenUnsatisfiable: ScheduleAnyway
+#      labelSelector:
+#        matchLabels:
+#          app.kubernetes.io/name: kube-state-metrics
+#      matchLabelKeys:
+#        - pod-template-hash
 
   prometheus:
     monitor:
