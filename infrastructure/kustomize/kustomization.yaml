@@ -16,3 +16,4 @@ resources:
   - grafana-operator.yaml
   - grafana.yaml
   - vault-secrets-operator.yaml
+  - vault.yaml
