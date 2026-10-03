@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: vault-secrets-operator
+description: Wrapper chart to deploy upstream victoria-metrics via Argo CD
+version: 0.1.0
+dependencies:
+  - name: vault-secrets-operator
+    version: 1.6.0
+    repository: https://helm.releases.hashicorp.com
