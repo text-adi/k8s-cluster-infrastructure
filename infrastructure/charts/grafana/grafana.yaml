@@ -3,4 +3,6 @@ kind: Grafana
 metadata:
   name: grafana
   namespace: grafana
+  labels:
+    dashboards: grafana
 spec: {}
