@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - projects/platform-core.yaml
+  - projects/platform-security.yaml
+  - projects/platform-networking.yaml
+  - projects/observability.yaml
+
+  - platform-core/argocd-self.yaml
+  - platform-core/priority-classes.yaml
+  - platform-core/vpa.yaml
+
+  - platform-security/vault.yaml
+  - platform-security/vault-secrets-operator.yaml
+  #  - platform-security/cert-manager.yaml
+
+  - platform-networking/envoy-gateway-crds.yaml
+  - platform-networking/envoy-gateway.yaml
+
+  - observability/metrics-server.yaml
+  - observability/kube-state-metrics.yaml
+  - observability/prometheus-node-exporter.yaml
+  - observability/prometheus-operator-crds.yaml
+  - observability/victoria-metrics-operator-crds.yaml
+  - observability/victoria-metrics-operator.yaml
+  - observability/victoria-metrics-stack.yaml
+  - observability/grafana-operator.yaml
+  - observability/grafana.yaml

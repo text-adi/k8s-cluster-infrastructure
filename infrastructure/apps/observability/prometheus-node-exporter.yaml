@@ -1,20 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metrics-server
+  name: prometheus-node-exporter
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: observability
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/charts/metrics-server
+    path: infrastructure/charts/prometheus-node-exporter
     helm:
-      releaseName: metrics-server
+      releaseName: prometheus-node-exporter
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring

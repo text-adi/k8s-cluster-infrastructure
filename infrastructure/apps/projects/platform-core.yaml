@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform-core
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "Самоуправління ArgoCD, scheduling priorities, autoscaling"
+  sourceRepos:
+    - 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: argocd
+    - server: 'https://kubernetes.default.svc'
+      namespace: vpa
+    - server: 'https://kubernetes.default.svc'
+      namespace: priority-classes
+  clusterResourceWhitelist:
+    - group: 'scheduling.k8s.io'
+      kind: PriorityClass
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

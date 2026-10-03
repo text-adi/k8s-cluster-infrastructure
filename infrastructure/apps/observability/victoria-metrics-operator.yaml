@@ -1,26 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vertical-pod-autoscaler
+  name: victoria-metrics-operator
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: observability
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/charts/vertical-pod-autoscaler
+    path: infrastructure/charts/victoria-metrics-operator
     helm:
-      releaseName: vertical-pod-autoscaler
+      releaseName: victoria-metrics-operator
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: vpa
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
+      - RespectIgnoreDifferences=true
       - ServerSideApply=true
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

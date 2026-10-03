@@ -1,28 +1,25 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus-operator-crds
+  name: priority-classes
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-5"
+    argocd.argoproj.io/sync-wave: "-10"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: platform-core
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/charts/prometheus-operator-crds
-    helm:
-      releaseName: prometheus-operator-crds
+    path: infrastructure/manifests/priority-classes
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: monitoring
+    namespace: priority-classes
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
-      - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

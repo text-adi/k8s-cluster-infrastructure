@@ -1,21 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus-node-exporter
+  name: vertical-pod-autoscaler
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: platform-core
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/charts/prometheus-node-exporter
+    path: infrastructure/charts/vertical-pod-autoscaler
     helm:
-      releaseName: prometheus-node-exporter
+      releaseName: vertical-pod-autoscaler
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: monitoring
+    namespace: vpa
   syncPolicy:
     automated:
       prune: true

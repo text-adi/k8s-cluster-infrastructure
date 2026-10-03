@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform-networking
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "Envoy Gateway — ingress/gateway"
+  sourceRepos:
+    - 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: envoy-gateway-system
+  clusterResourceWhitelist:
+    - group: 'apiextensions.k8s.io'
+      kind: CustomResourceDefinition
+    - group: 'gateway.networking.k8s.io'
+      kind: GatewayClass
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

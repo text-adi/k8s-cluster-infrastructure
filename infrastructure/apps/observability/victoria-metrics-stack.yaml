@@ -1,18 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kube-state-metrics
+  name: victoria-metrics-stack
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: observability
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/charts/kube-state-metrics
-    helm:
-      releaseName: kube-state-metrics
+    path: infrastructure/manifests/victoria-metrics-stack
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
