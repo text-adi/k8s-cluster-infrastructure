@@ -23,11 +23,23 @@ argo-cd:
     dynamicClusterDistribution: true
     replicas: 2
     metrics: *metricsDefaults
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-application-controller
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-application-controller
 
   dex:
     pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
-    replicas: 2
     metrics: *metricsDefaults
 
   redis:
@@ -42,18 +54,58 @@ argo-cd:
     networkPolicy: *networkPolicyDefaults
     replicas: 2
     metrics: *metricsDefaults
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-server
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-server
 
   repoServer:
     pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
     replicas: 2
     metrics: *metricsDefaults
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-repo-server
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-repo-server
 
   applicationSet:
     pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
     replicas: 2
     metrics: *metricsDefaults
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-applicationset-controller
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-applicationset-controller
+
 
   notifications:
     pdb: *pdbDefaults

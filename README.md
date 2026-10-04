@@ -2,7 +2,7 @@
 
 1. 
 ```bash
-helmfile apply -f bootstrap/helmfile.yaml
+kubectl kustomize --enable-helm --load-restrictor LoadRestrictionsNone bootstrap/ | kubectl apply --server-side --force-conflicts -f -
 ```
 
 [//]: # (2.)
