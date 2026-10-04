@@ -4,6 +4,14 @@ pdbDefaults: &pdbDefaults
   minAvailable: 50%
   unhealthyPodEvictionPolicy: AlwaysAllow
 
+networkPolicy: &networkPolicyDefaults
+  create: true
+
+metrics: &metricsDefaults
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
 argo-cd:
   configs:
     cm:
@@ -11,21 +19,44 @@ argo-cd:
 
   controller:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    dynamicClusterDistribution: true
+    replicas: 2
+    metrics: *metricsDefaults
 
   dex:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    replicas: 2
+    metrics: *metricsDefaults
 
   redis:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    exporter:
+      enabled: true
+    metrics: *metricsDefaults
 
   server:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    replicas: 2
+    metrics: *metricsDefaults
 
   repoServer:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    replicas: 2
+    metrics: *metricsDefaults
 
   applicationSet:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    replicas: 2
+    metrics: *metricsDefaults
 
   notifications:
     pdb: *pdbDefaults
+    networkPolicy: *networkPolicyDefaults
+    metrics: *metricsDefaults
+
