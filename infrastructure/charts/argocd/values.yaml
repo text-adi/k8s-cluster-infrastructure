@@ -1,5 +1,31 @@
 ---
+pdbDefaults: &pdbDefaults
+  enabled: true
+  minAvailable: 50%
+  unhealthyPodEvictionPolicy: AlwaysAllow
+
 argo-cd:
   configs:
     cm:
       timeout.reconciliation: 15s
+
+  controller:
+    pdb: *pdbDefaults
+
+  dex:
+    pdb: *pdbDefaults
+
+  redis:
+    pdb: *pdbDefaults
+
+  server:
+    pdb: *pdbDefaults
+
+  repoServer:
+    pdb: *pdbDefaults
+
+  applicationSet:
+    pdb: *pdbDefaults
+
+  notifications:
+    pdb: *pdbDefaults
