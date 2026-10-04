@@ -24,3 +24,4 @@ spec:
       - ServerSideApply=true
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true
+      - PruneLast=true

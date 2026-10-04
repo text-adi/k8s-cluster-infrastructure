@@ -25,3 +25,4 @@ spec:
       - CreateNamespace=false
       - ApplyOutOfSyncOnly=true
       - Force=true
+      - PruneLast=true
