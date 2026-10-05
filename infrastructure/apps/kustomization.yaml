@@ -28,3 +28,4 @@ resources:
   - observability/victoria-metrics-stack.yaml
   - observability/grafana-operator.yaml
   - observability/grafana.yaml
+
