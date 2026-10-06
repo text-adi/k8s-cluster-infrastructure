@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - vm-agent.yaml
   - vm-storage.yaml
+  - vm-node-scrape.yaml

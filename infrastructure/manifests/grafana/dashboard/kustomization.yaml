@@ -1,11 +1,6 @@
+namespace: grafana
 resources:
   - node-exporter-dashboard.yaml
 
-configMapGenerator:
-  - name: node-exporter-dashboard-json
-    namespace: grafana
-    files:
-      - node-exporter.json=node-exporter.json
-
-generatorOptions:
-  disableNameSuffixHash: true
+patches:
+  - path: node-exporter.yaml

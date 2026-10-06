@@ -1,5 +1,5 @@
 apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
+kind: GrafanaManifest
 metadata:
   name: node-exporter
   namespace: grafana
@@ -7,6 +7,9 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  configMapRef:
-    name: node-exporter-dashboard-json
-    key: node-exporter.json
+  template:
+    apiVersion: dashboard.grafana.app/v2beta1
+    kind: Dashboard
+    metadata:
+      name: node-exporter
+    spec: {}
