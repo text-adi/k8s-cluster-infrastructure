@@ -4,10 +4,8 @@ metrics-server:
     insecureSkipTLSVerify: false
   tls:
     type: "helm"
-  metrics:
+  serviceMonitor:
     enabled: true
-    serviceMonitor:
-      enabled: true
   podDisruptionBudget:
     enabled: true
     minAvailable: 50%
