@@ -30,3 +30,4 @@ resources:
   - observability/grafana.yaml
 
   - keda.yaml
+  - ingress-traefik.yaml
