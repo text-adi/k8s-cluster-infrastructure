@@ -40,7 +40,6 @@ argo-cd:
   dex:
     pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
-    metrics: *metricsDefaults
 
   redis:
     pdb: *pdbDefaults

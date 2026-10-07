@@ -1,21 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-infrastructure
+  name: keda
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
-    targetRevision: dev
-    path: infrastructure/apps
+  sources:
+    - repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+      targetRevision: dev
+      path: infrastructure/charts/keda
+      helm:
+        releaseName: keda
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: argocd
+    namespace: keda
   syncPolicy:
     automated:
+      prune: true
       selfHeal: true
     syncOptions:
       - ServerSideApply=true

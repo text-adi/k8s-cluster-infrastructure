@@ -29,3 +29,4 @@ resources:
   - observability/grafana-operator.yaml
   - observability/grafana.yaml
 
+  - keda.yaml

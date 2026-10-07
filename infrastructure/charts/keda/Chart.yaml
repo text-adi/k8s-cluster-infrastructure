@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: keda
+description: Wrapper chart to deploy upstream keda via Argo CD
+version: 0.1.0
+dependencies:
+  - name: keda
+    version: 2.21.0
+    repository: https://kedacore.github.io/charts
