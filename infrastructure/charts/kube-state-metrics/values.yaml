@@ -2,10 +2,6 @@
 kube-state-metrics:
   priorityClassName: "platform-critical"
 
-  podDisruptionBudget:
-    minAvailable: 50%
-    unhealthyPodEvictionPolicy: AlwaysAllow
-
   replicas: 1
 
 #  topologySpreadConstraints:

@@ -38,11 +38,9 @@ argo-cd:
             app.kubernetes.io/name: argocd-application-controller
 
   dex:
-    pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
 
   redis:
-    pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
     exporter:
       enabled: true
@@ -107,7 +105,6 @@ argo-cd:
 
 
   notifications:
-    pdb: *pdbDefaults
     networkPolicy: *networkPolicyDefaults
     metrics: *metricsDefaults
 
