@@ -3,10 +3,7 @@ victoria-metrics-operator:
   crds:
     enabled: false
 
-  replicaCount: 2
-  podDisruptionBudget:
-    enabled: true
-    minAvailable: 1
+  replicaCount: 1
 
   resources:
     requests:
