@@ -20,7 +20,7 @@ kind: PriorityClass
 metadata:
   name: default-priority
 value: 100000
-globalDefault: true
+globalDefault: false
 description: "Default parameters"
 ---
 apiVersion: scheduling.k8s.io/v1
