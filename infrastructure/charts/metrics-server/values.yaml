@@ -8,12 +8,8 @@ metrics-server:
     enabled: true
   serviceMonitor:
     enabled: true
-  podDisruptionBudget:
-    enabled: true
-    minAvailable: 50%
-    unhealthyPodEvictionPolicy: AlwaysAllow
 
-  replicas: 2
+  replicas: 1
   priorityClassName: "platform-critical"
   resources:
     limits:
