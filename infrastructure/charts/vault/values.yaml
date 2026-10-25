@@ -1,1 +1,17 @@
 ---
+vault:
+  server:
+    extraVolumes:
+      - type: configMap
+        name: vault-init-script
+    # VAULT_UNSEAL_KEY must come from a Secret named "vault-unseal-key"
+    # (key: "key") created manually on the cluster — never commit the
+    # real unseal key to git.
+    extraSecretEnvironmentVars:
+      - envName: VAULT_UNSEAL_KEY
+        secretName: vault-unseal-key
+        secretKey: key
+    postStart:
+      - /bin/sh
+      - -c
+      - /vault/userconfig/vault-init-script/unseal.sh

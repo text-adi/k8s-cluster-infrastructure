@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-init-script
+  namespace: {{ .Release.Namespace }}
+data:
+  unseal.sh: |
+    #!/bin/sh
+    echo "Waiting for Vault to start..."
+
+    # Wait until Vault reports itself as initialized
+    until vault status -format=json 2>/dev/null | grep -q '"initialized": *true'; do
+      sleep 2
+    done
+
+    # Unseal if sealed. VAULT_UNSEAL_KEY is injected from a Secret
+    # that is created out-of-band and never committed to git.
+    if vault status -format=json 2>/dev/null | grep -q '"sealed": *true'; then
+      echo "Vault is sealed. Unsealing..."
+      vault operator unseal "${VAULT_UNSEAL_KEY}"
+    else
+      echo "Vault is already unsealed."
+    fi
