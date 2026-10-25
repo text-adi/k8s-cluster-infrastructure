@@ -4,7 +4,7 @@ metadata:
   name: ingress-ha
 spec:
   type: ingress
-  replicas: 3
+  replicas: 2
   proxyClass: ingress-ha
 #
 # Usage on any Ingress that should run on this HA pool instead of getting its
