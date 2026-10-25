@@ -12,6 +12,8 @@ spec:
   destinations:
     - server: 'https://kubernetes.default.svc'
       namespace: envoy-gateway-system
+    - server: 'https://kubernetes.default.svc'
+      namespace: tailscale
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
