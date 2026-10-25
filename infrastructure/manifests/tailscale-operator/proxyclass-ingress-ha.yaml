@@ -1,0 +1,20 @@
+apiVersion: tailscale.com/v1alpha1
+kind: ProxyClass
+metadata:
+  name: ingress-ha
+spec:
+  statefulSet:
+    pod:
+      # Soft spread across nodes: a hard "required" rule would leave a replica
+      # stuck Pending if too many nodes are drained/down at once, which is
+      # worse for availability than letting it co-locate.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    tailscale.com/parent-resource-type: proxygroup
+                    tailscale.com/parent-resource: ingress-ha
+                topologyKey: kubernetes.io/hostname

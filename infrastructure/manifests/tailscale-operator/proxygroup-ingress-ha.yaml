@@ -1,0 +1,17 @@
+apiVersion: tailscale.com/v1alpha1
+kind: ProxyGroup
+metadata:
+  name: ingress-ha
+spec:
+  type: ingress
+  replicas: 3
+  proxyClass: ingress-ha
+#
+# Usage on any Ingress that should run on this HA pool instead of getting its
+# own single-replica proxy:
+#
+# metadata:
+#   annotations:
+#     tailscale.com/proxy-group: ingress-ha
+# spec:
+#   ingressClassName: tailscale

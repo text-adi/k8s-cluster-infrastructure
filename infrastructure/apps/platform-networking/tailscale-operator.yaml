@@ -7,10 +7,13 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: platform-networking
-  source:
-    repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
-    targetRevision: dev
-    path: infrastructure/charts/tailscale-operator
+  sources:
+    - repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+      targetRevision: dev
+      path: infrastructure/charts/tailscale-operator
+    - repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+      targetRevision: dev
+      path: infrastructure/manifests/tailscale-operator
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: tailscale
