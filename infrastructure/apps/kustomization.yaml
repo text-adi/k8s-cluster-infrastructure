@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - root-application.yaml
   - projects/infrastructure.yaml
-#  - projects/apps.yaml
+  - projects/apps.yaml
 
   - platform-core/argocd-self.yaml
   - platform-core/priority-classes.yaml
