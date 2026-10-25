@@ -7,11 +7,22 @@ vault:
     # VAULT_UNSEAL_KEY must come from a Secret named "vault-unseal-key"
     # (key: "key") created manually on the cluster — never commit the
     # real unseal key to git.
-    extraSecretEnvironmentVars:
-      - envName: VAULT_UNSEAL_KEY
-        secretName: vault-unseal-key
-        secretKey: key
-    postStart:
-      - /bin/sh
-      - -c
-      - /vault/userconfig/vault-init-script/unseal.sh
+    extraContainers:
+      - name: vault-unsealer
+        image: "hashicorp/vault:2.0.4"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /vault/userconfig/vault-init-script/unseal.sh
+        env:
+          - name: VAULT_ADDR
+            value: http://127.0.0.1:8200
+          - name: VAULT_UNSEAL_KEY
+            valueFrom:
+              secretKeyRef:
+                name: vault-unseal-key
+                key: key
+        volumeMounts:
+          - name: userconfig-vault-init-script
+            mountPath: /vault/userconfig/vault-init-script
+            readOnly: true

@@ -6,18 +6,20 @@ metadata:
 data:
   unseal.sh: |
     #!/bin/sh
-    echo "Waiting for Vault to start..."
+    echo "Vault unseal watcher started."
 
-    # Wait until Vault reports itself as initialized
-    until vault status -format=json 2>/dev/null | grep -q '"initialized": *true'; do
-      sleep 2
+    # Runs for the lifetime of the sidecar container (not a lifecycle hook),
+    # so it can safely wait out however long Vault takes to be initialized
+    # and keeps re-checking after every future restart/reseal.
+    # VAULT_UNSEAL_KEY is injected from a Secret created out-of-band and
+    # never committed to git.
+    while true; do
+      STATUS=$(vault status -format=json 2>/dev/null)
+
+      if echo "$STATUS" | grep -q '"initialized": *true' && echo "$STATUS" | grep -q '"sealed": *true'; then
+        echo "Vault is sealed. Unsealing..."
+        vault operator unseal "${VAULT_UNSEAL_KEY}"
+      fi
+
+      sleep 5
     done
-
-    # Unseal if sealed. VAULT_UNSEAL_KEY is injected from a Secret
-    # that is created out-of-band and never committed to git.
-    if vault status -format=json 2>/dev/null | grep -q '"sealed": *true'; then
-      echo "Vault is sealed. Unsealing..."
-      vault operator unseal "${VAULT_UNSEAL_KEY}"
-    else
-      echo "Vault is already unsealed."
-    fi
