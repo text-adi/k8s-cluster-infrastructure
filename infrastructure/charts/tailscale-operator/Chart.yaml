@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: tailscale-operator
+description: Wrapper chart to deploy upstream tailscale-operator via Argo CD
+version: 0.1.0
+dependencies:
+  - name: tailscale-operator
+    version: 1.104.1
+    repository: https://pkgs.tailscale.com/helmcharts
