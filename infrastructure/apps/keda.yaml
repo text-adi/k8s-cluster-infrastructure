@@ -4,7 +4,7 @@ metadata:
   name: keda
   namespace: argocd
 spec:
-  project: default
+  project: infrastructure
   sources:
     - repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
       targetRevision: dev

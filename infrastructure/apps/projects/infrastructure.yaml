@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "Платформа кластера: ArgoCD, мережа, секрети, observability, autoscaling"
+  sourceRepos:
+    - 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: argocd
+    - server: 'https://kubernetes.default.svc'
+      namespace: vpa
+    - server: 'https://kubernetes.default.svc'
+      namespace: priority-classes
+    - server: 'https://kubernetes.default.svc'
+      namespace: vault
+    - server: 'https://kubernetes.default.svc'
+      namespace: vault-secrets-operator
+    - server: 'https://kubernetes.default.svc'
+      namespace: cert-manager
+    - server: 'https://kubernetes.default.svc'
+      namespace: envoy-gateway-system
+    - server: 'https://kubernetes.default.svc'
+      namespace: tailscale
+    - server: 'https://kubernetes.default.svc'
+      namespace: grafana
+    - server: 'https://kubernetes.default.svc'
+      namespace: grafana-operator
+    - server: 'https://kubernetes.default.svc'
+      namespace: monitoring
+    - server: 'https://kubernetes.default.svc'
+      namespace: kube-system
+    - server: 'https://kubernetes.default.svc'
+      namespace: keda
+    - server: 'https://kubernetes.default.svc'
+      namespace: ingress-controller
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
