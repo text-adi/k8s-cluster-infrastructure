@@ -7,10 +7,13 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
-    targetRevision: dev
-    path: infrastructure/apps
+  sources:
+    - repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+      targetRevision: dev
+      path: infrastructure/apps
+    - repoURL: 'https://github.com/text-adi/k8s-cluster-app.git'
+      targetRevision: dev
+      path: infrastructure/apps
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
