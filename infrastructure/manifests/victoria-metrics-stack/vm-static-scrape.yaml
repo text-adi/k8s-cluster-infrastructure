@@ -1,0 +1,8 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: gateway-exporter
+spec:
+  targetEndpoints:
+    - targets:
+        - 10.0.0.1:9100

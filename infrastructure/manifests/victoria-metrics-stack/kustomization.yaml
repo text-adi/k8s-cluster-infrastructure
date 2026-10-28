@@ -5,3 +5,4 @@ resources:
   - vm-agent.yaml
   - vm-storage.yaml
   - vm-node-scrape.yaml
+  - vm-static-scrape.yaml
