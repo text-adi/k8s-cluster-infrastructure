@@ -9,13 +9,13 @@ csi-driver-nfs:
             labelSelector:
               matchLabels:
                 app: csi-nfs-controller
-  storageClass:
+  storageClasses:
     - name: nfs-delete
       annotations:
         storageclass.kubernetes.io/is-default-class: "true"
       parameters:
         server: 10.0.43.104
-        share: /
+        share: /mnt/data
       reclaimPolicy: Delete
       volumeBindingMode: Immediate
       mountOptions:
@@ -23,7 +23,7 @@ csi-driver-nfs:
     - name: nfs-retain
       parameters:
         server: 10.0.43.104
-        share: /data
+        share: /mnt/data
       reclaimPolicy: Retain
       volumeBindingMode: Immediate
       mountOptions:
