@@ -3,6 +3,8 @@ kind: VMStaticScrape
 metadata:
   name: gateway-exporter
 spec:
+  jobName: "gateway"
   targetEndpoints:
     - targets:
         - 10.0.0.1:9100
+      scrape_interval: "10s"
