@@ -12,7 +12,7 @@ prometheus-operator-crds:
     ## podmonitors configures the PodMonitor CRD
     podmonitors:
       ## enabled defines if the CRD should be installed
-      enabled: false
+      enabled: true
 
     ## probes configures the Probe CRD
     probes:
