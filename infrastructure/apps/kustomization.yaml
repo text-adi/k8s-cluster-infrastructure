@@ -16,7 +16,6 @@ resources:
 
   - platform-networking/envoy-gateway-crds.yaml
   - platform-networking/envoy-gateway.yaml
-  - platform-networking/tailscale-operator-secrets.yaml
   - platform-networking/tailscale-operator.yaml
 
   - observability/metrics-server.yaml

@@ -5,4 +5,13 @@ metadata:
   namespace: grafana
   labels:
     dashboards: grafana
-spec: {}
+spec:
+  ingress:
+    spec:
+      ingressClassName: tailscale
+      tls:
+        - hosts:
+            - grafana
+    metadata:
+      annotations:
+        tailscale.com/proxy-group: ingress-ha

@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - proxyclass-ingress-ha.yaml
   - proxygroup-ingress-ha.yaml
+  - secrets
