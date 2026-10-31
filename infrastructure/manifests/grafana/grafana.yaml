@@ -15,3 +15,8 @@ spec:
     metadata:
       annotations:
         tailscale.com/proxy-group: ingress-ha
+  persistentVolumeClaim:
+    spec:
+      resources:
+        requests:
+          storage: 250Mi
