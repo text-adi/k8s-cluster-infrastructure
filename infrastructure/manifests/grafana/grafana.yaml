@@ -15,6 +15,14 @@ spec:
     metadata:
       annotations:
         tailscale.com/proxy-group: ingress-ha
+  deployment:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-pvc
   persistentVolumeClaim:
     spec:
       resources:
