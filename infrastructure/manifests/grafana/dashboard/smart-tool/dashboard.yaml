@@ -1,0 +1,15 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaManifest
+metadata:
+  name: smart-tool
+  namespace: grafana
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  template:
+    apiVersion: dashboard.grafana.app/v2beta1
+    kind: Dashboard
+    metadata:
+      name: smart-tool
+    spec: {}

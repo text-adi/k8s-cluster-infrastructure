@@ -1,6 +1,4 @@
 namespace: grafana
 resources:
-  - node-exporter-dashboard.yaml
-
-patches:
-  - path: node-exporter.yaml
+  - node-exporter
+  - smart-tool

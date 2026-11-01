@@ -1,0 +1,6 @@
+namespace: grafana
+resources:
+  - dashboard.yaml
+
+patches:
+  - path: export.yaml
