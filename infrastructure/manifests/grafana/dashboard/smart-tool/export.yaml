@@ -130,9 +130,11 @@ spec:
                         kind: DataQuery
                         spec:
                           editorMode: builder
+                          exemplar: false
                           expr: battery_percent
+                          instant: true
                           legendFormat: __auto
-                          range: true
+                          range: false
                         version: v0
                       refId: A
                 queryOptions: { }
@@ -390,10 +392,10 @@ spec:
                           editorMode: builder
                           exemplar: false
                           expr: temperature_raw * 0.1
-                          instant: false
+                          instant: true
                           interval: ''
                           legendFormat: __auto
-                          range: true
+                          range: false
                         version: v0
                       refId: A
                 queryOptions: { }
@@ -451,9 +453,9 @@ spec:
                           editorMode: builder
                           exemplar: false
                           expr: humidity
-                          instant: false
+                          instant: true
                           legendFormat: __auto
-                          range: true
+                          range: false
                         version: v0
                       refId: A
                 queryOptions: { }
@@ -550,11 +552,6 @@ spec:
                 title: Battery
       links: [ ]
       liveNow: false
-      preferences:
-        layout:
-          kind: GridLayout
-          spec:
-            items: [ ]
       preload: false
       tags: [ ]
       timeSettings:
