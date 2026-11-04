@@ -28,6 +28,7 @@ resources:
   - observability/grafana.yaml
 
   - logging/elasticsearch.yaml
+  - logging/elasticsearch-operator.yaml
 
   - csi-driver/nfs.yaml
   - keda.yaml

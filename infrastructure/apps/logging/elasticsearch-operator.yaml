@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elasticsearch-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  source:
+    repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
+    targetRevision: dev
+    path: infrastructure/charts/elasticsearch-operator
+    helm:
+      releaseName: elasticsearch-operator
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: elasticsearch-operator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true

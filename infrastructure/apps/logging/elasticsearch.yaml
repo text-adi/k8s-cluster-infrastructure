@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: elasticsearch
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -12,12 +10,10 @@ spec:
   source:
     repoURL: 'https://github.com/text-adi/k8s-cluster-infrastructure.git'
     targetRevision: dev
-    path: infrastructure/charts/elasticsearch-operator
-    helm:
-      releaseName: elasticsearch
+    path: infrastructure/manifests/elasticsearch-stack
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: elasticsearch-operator
+    namespace: elasticsearch
   syncPolicy:
     automated:
       prune: true
