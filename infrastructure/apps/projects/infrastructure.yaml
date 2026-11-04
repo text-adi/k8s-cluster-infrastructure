@@ -41,7 +41,7 @@ spec:
     - server: 'https://kubernetes.default.svc'
       namespace: csi-driver-nfs
     - server: 'https://kubernetes.default.svc'
-      namespace: elasticsearch
+      namespace: elasticsearch-operator
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
