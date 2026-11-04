@@ -22,7 +22,6 @@ resources:
   - observability/kube-state-metrics.yaml
   - observability/prometheus-node-exporter.yaml
   - observability/prometheus-operator-crds.yaml
-  - observability/victoria-metrics-operator-crds.yaml
   - observability/victoria-metrics-operator.yaml
   - observability/victoria-metrics-stack.yaml
   - observability/grafana-operator.yaml

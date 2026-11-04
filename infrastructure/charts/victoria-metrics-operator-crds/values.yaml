@@ -1,3 +1,0 @@
----
-victoria-metrics-operator-crds:
-  priorityClassName: "platform-critical"

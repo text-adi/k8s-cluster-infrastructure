@@ -12,3 +12,7 @@ dependencies:
   - name: victoria-metrics-operator
     version: 0.67.3
     repository: https://victoriametrics.github.io/helm-charts/
+
+  - name: victoria-metrics-operator-crds
+    version: 0.14.0
+    repository: https://victoriametrics.github.io/helm-charts/
