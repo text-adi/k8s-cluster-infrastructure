@@ -40,6 +40,8 @@ spec:
       namespace: ingress-controller
     - server: 'https://kubernetes.default.svc'
       namespace: csi-driver-nfs
+    - server: 'https://kubernetes.default.svc'
+      namespace: elasticsearch
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
