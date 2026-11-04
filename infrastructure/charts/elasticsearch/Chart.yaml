@@ -1,9 +1,0 @@
----
-apiVersion: v2
-name: elasticsearch
-description: Wrapper chart to deploy upstream elastic via Argo CD
-version: 0.1.0
-dependencies:
-  - name: eck-stack
-    version: 0.20.0
-    repository: https://helm.elastic.co

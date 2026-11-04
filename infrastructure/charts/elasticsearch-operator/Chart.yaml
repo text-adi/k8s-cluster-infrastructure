@@ -1,0 +1,13 @@
+---
+apiVersion: v2
+name: elasticsearch-operator
+description: Wrapper chart to deploy upstream elastic via Argo CD
+version: 0.1.0
+dependencies:
+  - name: eck-operator
+    version: 3.5.0
+    repository: https://helm.elastic.co
+
+  - name: eck-operator-crds
+    version: 3.5.0
+    repository: https://helm.elastic.co
