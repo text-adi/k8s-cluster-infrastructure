@@ -29,6 +29,7 @@ resources:
 
   - logging/elasticsearch.yaml
   - logging/elasticsearch-operator.yaml
+  - logging/vector.yaml
 
   - csi-driver/nfs.yaml
   - keda.yaml

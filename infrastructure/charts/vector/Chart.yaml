@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: vector
+description: Wrapper chart to deploy upstream vector via Argo CD
+version: 0.1.0
+dependencies:
+  - name: vector
+    version: 0.61.0
+    repository: https://helm.vector.dev

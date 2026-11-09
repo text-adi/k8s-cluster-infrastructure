@@ -1,0 +1,75 @@
+---
+vector:
+  role: "Agent"
+
+  tolerations:
+    - operator: "Exists"
+  priorityClassName: "platform-critical"
+
+  podMonitor:
+    enabled: true
+
+  # Mounts the CA cert that ECK generates for the Elasticsearch HTTP service,
+  # so Vector can verify the TLS certificate when shipping logs.
+  extraVolumes:
+    - name: es-certs
+      secret:
+        secretName: elasticsearch-es-http-certs-public
+
+  extraVolumeMounts:
+    - name: es-certs
+      mountPath: /etc/vector/es-certs
+      readOnly: true
+
+  # Credentials for the auto-generated "elastic" user, created by ECK in the
+  # same namespace as the Elasticsearch resource.
+  env:
+    - name: ELASTICSEARCH_USERNAME
+      value: "elastic"
+    - name: ELASTICSEARCH_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-es-elastic-user
+          key: elastic
+
+  customConfig:
+    data_dir: /vector-data-dir
+    api:
+      enabled: true
+      address: 0.0.0.0:8686
+    sources:
+      kubernetes_logs:
+        type: kubernetes_logs
+      host_metrics:
+        filesystem:
+          devices:
+            excludes: [binfmt_misc]
+          filesystems:
+            excludes: [binfmt_misc]
+          mountpoints:
+            excludes: ["*/proc/sys/fs/binfmt_misc"]
+        type: host_metrics
+      internal_metrics:
+        type: internal_metrics
+    sinks:
+      prom_exporter:
+        type: prometheus_exporter
+        inputs: [host_metrics, internal_metrics]
+        address: 0.0.0.0:9090
+      elasticsearch:
+        type: elasticsearch
+        inputs: [kubernetes_logs]
+        endpoints:
+          - "https://elasticsearch-es-http.elasticsearch.svc:9200"
+        mode: data_stream
+        data_stream:
+          # <type>-<dataset>-<namespace>
+          type: logs
+          dataset: vector
+          namespace: default
+        auth:
+          strategy: basic
+          user: "${ELASTICSEARCH_USERNAME}"
+          password: "${ELASTICSEARCH_PASSWORD}"
+        tls:
+          ca_file: /etc/vector/es-certs/ca.crt
