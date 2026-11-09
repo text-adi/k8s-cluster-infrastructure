@@ -36,7 +36,7 @@ vector:
       aggregator:
         type: http
         inputs: [kubernetes_logs]
-        uri: "http://vector-aggregator.logging.svc.cluster.local:6000/"
+        uri: "http://vector-aggregator.elasticsearch.svc:6000/"
         method: post
         framing:
           method: newline_delimited
