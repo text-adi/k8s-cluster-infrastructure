@@ -24,6 +24,10 @@ vector:
   # Credentials for the auto-generated "elastic" user, created by ECK in the
   # same namespace as the Elasticsearch resource.
   env:
+    # Since Vector 0.57.0, ${VAR} interpolation in vector.yaml is disabled
+    # by default and must be explicitly opted into.
+    - name: VECTOR_DANGEROUSLY_ALLOW_ENV_VAR_INTERPOLATION
+      value: "true"
     - name: ELASTICSEARCH_USERNAME
       value: "elastic"
     - name: ELASTICSEARCH_PASSWORD
