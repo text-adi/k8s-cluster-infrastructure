@@ -9,6 +9,57 @@ vector:
   podMonitor:
     enabled: true
 
+  customConfig:
+    data_dir: /vector-data-dir
+    api:
+      enabled: true
+      address: 0.0.0.0:8686
+    sources:
+      kubernetes_logs:
+        type: kubernetes_logs
+      host_metrics:
+        filesystem:
+          devices:
+            excludes: [binfmt_misc]
+          filesystems:
+            excludes: [binfmt_misc]
+          mountpoints:
+            excludes: ["*/proc/sys/fs/binfmt_misc"]
+        type: host_metrics
+      internal_metrics:
+        type: internal_metrics
+    sinks:
+      prom_exporter:
+        type: prometheus_exporter
+        inputs: [host_metrics, internal_metrics]
+        address: 0.0.0.0:9090
+      aggregator:
+        type: http
+        inputs: [kubernetes_logs]
+        uri: "http://vector-aggregator.logging.svc.cluster.local:6000/"
+        method: post
+        framing:
+          method: newline_delimited
+        encoding:
+          codec: json
+
+
+vector-aggregator:
+  role: "Aggregator"
+
+  terminationGracePeriodSeconds: 150
+
+  fullnameOverride: "vector-aggregator"
+
+  priorityClassName: "platform-critical"
+
+  podMonitor:
+    enabled: true
+
+  persistence:
+    enabled: true
+    size: 5Gi
+
   # Mounts the CA cert that ECK generates for the Elasticsearch HTTP service,
   # so Vector can verify the TLS certificate when shipping logs.
   extraVolumes:
@@ -42,27 +93,23 @@ vector:
       enabled: true
       address: 0.0.0.0:8686
     sources:
-      kubernetes_logs:
-        type: kubernetes_logs
-      host_metrics:
-        filesystem:
-          devices:
-            excludes: [binfmt_misc]
-          filesystems:
-            excludes: [binfmt_misc]
-          mountpoints:
-            excludes: ["*/proc/sys/fs/binfmt_misc"]
-        type: host_metrics
+      vector_agents:
+        type: http_server
+        address: 0.0.0.0:6000
+        framing:
+          method: newline_delimited
+        decoding:
+          codec: json
       internal_metrics:
         type: internal_metrics
     sinks:
       prom_exporter:
         type: prometheus_exporter
-        inputs: [host_metrics, internal_metrics]
+        inputs: [internal_metrics]
         address: 0.0.0.0:9090
       elasticsearch:
         type: elasticsearch
-        inputs: [kubernetes_logs]
+        inputs: [vector_agents]
         endpoints:
           - "https://elasticsearch-es-http.elasticsearch.svc:9200"
         mode: data_stream
@@ -70,10 +117,19 @@ vector:
           # <type>-<dataset>-<namespace>
           type: logs
           dataset: vector
-          namespace: default
+#          namespace: default
         auth:
           strategy: basic
           user: "${ELASTICSEARCH_USERNAME}"
           password: "${ELASTICSEARCH_PASSWORD}"
         tls:
           ca_file: /etc/vector/es-certs/ca.crt
+        compression: gzip
+        batch:
+          max_bytes: 5000000
+        request:
+          timeout_secs: 90
+        buffer:
+          type: disk
+          max_size: 536870912
+          when_full: block

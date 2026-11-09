@@ -7,3 +7,7 @@ dependencies:
   - name: vector
     version: 0.61.0
     repository: https://helm.vector.dev
+  - name: vector
+    alias: vector-aggregator
+    version: 0.61.0
+    repository: https://helm.vector.dev
