@@ -6,8 +6,21 @@ vector:
     - operator: "Exists"
   priorityClassName: "platform-critical"
 
+
+  terminationGracePeriodSeconds: 90
+
   podMonitor:
     enabled: true
+
+  extraVolumes:
+    - name: data-dir
+      hostPath:
+        path: /var/lib/vector-agent
+        type: DirectoryOrCreate
+
+  extraVolumeMounts:
+    - name: data-dir
+      mountPath: /vector-data-dir
 
   customConfig:
     data_dir: /vector-data-dir
@@ -42,6 +55,10 @@ vector:
           method: newline_delimited
         encoding:
           codec: json
+        buffer:
+          type: disk
+          max_size: 268435456
+          when_full: block
 
 
 vector-aggregator:
@@ -117,7 +134,7 @@ vector-aggregator:
           # <type>-<dataset>-<namespace>
           type: logs
           dataset: vector
-#          namespace: default
+          namespace: default
         auth:
           strategy: basic
           user: "${ELASTICSEARCH_USERNAME}"
