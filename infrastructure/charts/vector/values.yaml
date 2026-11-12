@@ -12,15 +12,10 @@ vector:
   podMonitor:
     enabled: true
 
-  extraVolumes:
-    - name: data-dir
-      hostPath:
-        path: /var/lib/vector-agent
-        type: DirectoryOrCreate
-
-  extraVolumeMounts:
-    - name: data-dir
-      mountPath: /vector-data-dir
+  persistence:
+    hostPath:
+      enabled: true
+      path: /var/lib/vector-agent
 
   customConfig:
     data_dir: /vector-data-dir
