@@ -33,4 +33,5 @@ resources:
 
   - csi-driver/nfs.yaml
   - keda.yaml
+  - kyverno.yaml
   - ingress-traefik.yaml

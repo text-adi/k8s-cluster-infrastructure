@@ -16,6 +16,20 @@ argo-cd:
   configs:
     cm:
       timeout.reconciliation: 15s
+      resource.exclusions: |
+        - apiGroups:
+            - kyverno.io
+            - wgpolicyk8s.io
+          kinds:
+            - AdmissionReport
+            - BackgroundScanReport
+            - ClusterAdmissionReport
+            - ClusterBackgroundScanReport
+            - PolicyReport
+            - ClusterPolicyReport
+            - UpdateRequest
+          clusters:
+            - "*"
 
   controller:
     pdb: *pdbDefaults
