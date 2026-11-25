@@ -31,6 +31,21 @@ data:
       - is dropped from the manifest (atomic write: tmp file + rename,
         matching VictoriaMetrics' own write convention)
 
+    Data partitions (small/big) additionally get a deep check: index.bin in
+    those parts is always a zstd stream (confirmed from real corruption
+    panics: "cannot decompress index block ... zstd"), so `zstd -t` on it
+    reliably catches corruption metadata.json alone misses - e.g. a block
+    zeroed out mid-write by an interrupted NFS write. values.bin/timestamps.bin
+    are deliberately NOT checked this way: VictoriaMetrics stores those with
+    adaptive per-block numeric encodings (delta/gorilla/const/...), not zstd,
+    so `zstd -t` fails on them even when they are perfectly healthy. Indexdb
+    (mergeset) parts are NOT deep-checked either - their binary format wasn't
+    verified and misclassifying it risks repeating that same mistake.
+
+    If the zstd binary isn't available in this container, the deep check is
+    skipped entirely (fail-open) rather than blocking startup or misjudging
+    parts as broken.
+
     Safe to run every startup: if nothing is broken, it's a no-op. Does not
     descend into cache/, snapshots/, tmp/, or txn/ directories - snapshots in
     particular are read-only backups and must never be mutated.
@@ -38,9 +53,12 @@ data:
     import json
     import os
     import shutil
+    import subprocess
     import sys
 
     SKIP_DIR_NAMES = {"cache", "snapshots", "tmp", "txn"}
+    ZSTD_AVAILABLE = shutil.which("zstd") is not None
+    DRY_RUN = "--dry-run" in sys.argv
 
     def find_parts_json_files(root):
         for dirpath, dirnames, filenames in os.walk(root):
@@ -48,18 +66,35 @@ data:
             if "parts.json" in filenames:
                 yield os.path.join(dirpath, "parts.json")
 
-    def is_part_valid(part_dir):
+    def index_bin_ok(part_dir):
+        if not ZSTD_AVAILABLE:
+            return True
+        index_path = os.path.join(part_dir, "index.bin")
+        if not os.path.isfile(index_path):
+            return True
+        try:
+            r = subprocess.run(["zstd", "-t", index_path], capture_output=True)
+            return r.returncode == 0
+        except OSError:
+            return True
+
+    def is_part_valid(part_dir, deep=False):
         meta_path = os.path.join(part_dir, "metadata.json")
         if not os.path.isfile(meta_path):
             return False
         try:
             with open(meta_path) as f:
                 json.load(f)
-            return True
         except (ValueError, OSError):
             return False
+        if deep and not index_bin_ok(part_dir):
+            return False
+        return True
 
     def atomic_write_json(path, data):
+        if DRY_RUN:
+            print(f"  [dry-run] would patch {path}")
+            return
         tmp_path = path + ".tmp"
         with open(tmp_path, "w") as f:
             json.dump(data, f)
@@ -76,16 +111,19 @@ data:
                 return os.sep.join(segments)
         return None
 
-    def remove_broken(base_dir, part_ids):
+    def remove_broken(base_dir, part_ids, deep=False):
         broken = []
         for part_id in part_ids:
-            if base_dir is None or not is_part_valid(os.path.join(base_dir, part_id)):
+            if base_dir is None or not is_part_valid(os.path.join(base_dir, part_id), deep=deep):
                 broken.append(part_id)
         for part_id in broken:
             part_dir = os.path.join(base_dir, part_id)
             if os.path.isdir(part_dir):
-                shutil.rmtree(part_dir)
-                print(f"  removed {part_dir}")
+                if DRY_RUN:
+                    print(f"  [dry-run] would remove {part_dir}")
+                else:
+                    shutil.rmtree(part_dir)
+                    print(f"  removed {part_dir}")
         return broken
 
     def fix_indexdb_table(parts_json_path, parts):
@@ -96,7 +134,8 @@ data:
         print(f"[fix] {parts_json_path}: {len(broken)}/{len(parts)} parts corrupted: {broken}")
         new_parts = [p for p in parts if p not in broken]
         atomic_write_json(parts_json_path, new_parts)
-        print(f"  patched {parts_json_path}: {len(parts)} -> {len(new_parts)} parts")
+        if not DRY_RUN:
+            print(f"  patched {parts_json_path}: {len(parts)} -> {len(new_parts)} parts")
         return len(broken)
 
     def fix_data_partition(parts_json_path, manifest):
@@ -106,13 +145,13 @@ data:
         small_ids = manifest.get("Small", [])
         big_ids = manifest.get("Big", [])
 
-        broken_small = remove_broken(small_dir, small_ids)
+        broken_small = remove_broken(small_dir, small_ids, deep=True)
         if big_ids and big_dir is None:
             print(f"[warn] {parts_json_path}: cannot locate sibling 'big' dir for {small_dir}, "
                   f"leaving {len(big_ids)} Big entries untouched")
             broken_big = []
         else:
-            broken_big = remove_broken(big_dir, big_ids)
+            broken_big = remove_broken(big_dir, big_ids, deep=True)
 
         broken = broken_small + broken_big
         if not broken:
@@ -124,8 +163,9 @@ data:
         manifest["Small"] = [p for p in small_ids if p not in broken_small]
         manifest["Big"] = [p for p in big_ids if p not in broken_big]
         atomic_write_json(parts_json_path, manifest)
-        print(f"  patched {parts_json_path}: Small {len(small_ids)}->{len(manifest['Small'])}, "
-              f"Big {len(big_ids)}->{len(manifest['Big'])}")
+        if not DRY_RUN:
+            print(f"  patched {parts_json_path}: Small {len(small_ids)}->{len(manifest['Small'])}, "
+                  f"Big {len(big_ids)}->{len(manifest['Big'])}")
         return len(broken)
 
     def fix_manifest(parts_json_path):
@@ -145,10 +185,15 @@ data:
         return 0
 
     def main():
-        root = sys.argv[1] if len(sys.argv) > 1 else "/victoria-metrics-data"
+        positional = [a for a in sys.argv[1:] if not a.startswith("--")]
+        root = positional[0] if positional else "/victoria-metrics-data"
         if not os.path.isdir(root):
             print(f"[warn] storage path {root} does not exist yet, nothing to do")
             return 0
+
+        print(f"[info] zstd deep-check for data partitions: {'enabled' if ZSTD_AVAILABLE else 'disabled (zstd binary not found)'}")
+        if DRY_RUN:
+            print("[info] --dry-run: no files will be modified or removed")
 
         total_fixed = 0
         for parts_json_path in find_parts_json_files(root):

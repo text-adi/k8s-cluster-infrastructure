@@ -18,7 +18,10 @@ spec:
   initContainers:
     - name: fix-corrupted-indexdb
       image: python:3.12-alpine
-      command: ["python3", "/scripts/fix-indexdb.py", "/victoria-metrics-data"]
+      command:
+        - sh
+        - -c
+        - "apk add --no-cache zstd >/dev/null 2>&1 || echo '[warn] could not install zstd, deep index.bin check will be skipped'; python3 /scripts/fix-indexdb.py /victoria-metrics-data"
       volumeMounts:
         - name: data
           mountPath: /victoria-metrics-data
