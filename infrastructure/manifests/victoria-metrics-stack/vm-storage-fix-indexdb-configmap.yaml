@@ -10,8 +10,15 @@ data:
     Repairs corrupted VictoriaMetrics mergeset indexdb tables before the main
     container starts. Runs as an initContainer against the same PVC as vmsingle.
 
-    Finds every parts.json (= one mergeset "table" directory), checks each
-    referenced part's metadata.json is valid JSON, and for any broken part:
+    Only touches indexdb tables (lib/mergeset), where parts.json is a flat
+    JSON array of part-id strings: ["ID1", "ID2", ...]. Data partitions under
+    data/small and data/big use a DIFFERENT parts.json schema
+    ({"Small": [...], "Big": [...]}, see lib/storage/partition.go) and are
+    deliberately skipped - treating them as a flat array silently truncates
+    the Small/Big part lists.
+
+    For each indexdb table, checks each referenced part's metadata.json is
+    valid JSON, and for any broken part:
       - removes the part directory
       - removes its entry from parts.json (atomic write, same convention VM uses)
 
@@ -22,8 +29,11 @@ data:
     import shutil
     import sys
 
-    def find_parts_json_files(root):
-        for dirpath, _dirnames, filenames in os.walk(root):
+    def find_indexdb_parts_json_files(root):
+        indexdb_root = os.path.join(root, "indexdb")
+        if not os.path.isdir(indexdb_root):
+            return
+        for dirpath, _dirnames, filenames in os.walk(indexdb_root):
             if "parts.json" in filenames:
                 yield os.path.join(dirpath, "parts.json")
 
@@ -55,6 +65,10 @@ data:
             print(f"[skip] cannot read {parts_json_path}: {e} (leaving untouched)")
             return 0
 
+        if not isinstance(parts, list):
+            print(f"[skip] {parts_json_path}: expected a JSON array, got {type(parts).__name__} (leaving untouched)")
+            return 0
+
         broken = [p for p in parts if not is_part_valid(table_dir, p)]
         if not broken:
             return 0
@@ -79,7 +93,7 @@ data:
             return 0
 
         total_fixed = 0
-        for parts_json_path in find_parts_json_files(root):
+        for parts_json_path in find_indexdb_parts_json_files(root):
             total_fixed += fix_table(parts_json_path)
 
         print(f"[done] total corrupted parts removed: {total_fixed}")
