@@ -7,38 +7,49 @@ data:
   fix-indexdb.py: |
     #!/usr/bin/env python3
     """
-    Repairs corrupted VictoriaMetrics mergeset indexdb tables before the main
-    container starts. Runs as an initContainer against the same PVC as vmsingle.
+    Repairs corrupted VictoriaMetrics storage tables before the main container
+    starts. Runs as an initContainer against the same PVC as vmsingle.
 
-    Only touches indexdb tables (lib/mergeset), where parts.json is a flat
-    JSON array of part-id strings: ["ID1", "ID2", ...]. Data partitions under
-    data/small and data/big use a DIFFERENT parts.json schema
-    ({"Small": [...], "Big": [...]}, see lib/storage/partition.go) and are
-    deliberately skipped - treating them as a flat array silently truncates
-    the Small/Big part lists.
+    VictoriaMetrics keeps a parts.json manifest in two different shapes:
 
-    For each indexdb table, checks each referenced part's metadata.json is
-    valid JSON, and for any broken part:
-      - removes the part directory
-      - removes its entry from parts.json (atomic write, same convention VM uses)
+      - indexdb tables (lib/mergeset): a flat array of part-id strings,
+        e.g. data/indexdb/2026_11/parts.json = ["ID1", "ID2", ...]
+        Each id is a subdirectory of the same folder.
 
-    Safe to run every startup: if nothing is broken, it's a no-op.
+      - data partitions (lib/storage/partition.go): an object
+        {"Small": [...], "Big": [...]}, e.g. data/small/2026_11/parts.json.
+        "Small" ids live in that same data/small/<month>/ folder; "Big" ids
+        live in the sibling data/big/<month>/ folder for the same month.
+
+    The schema is detected from the parsed JSON's type (list vs dict), not
+    from the path, so this is robust to layout changes. Any parts.json that
+    doesn't match either shape is left untouched and logged.
+
+    For every part referenced by a manifest, checks that its metadata.json
+    parses as JSON. Any part that fails:
+      - has its directory removed
+      - is dropped from the manifest (atomic write: tmp file + rename,
+        matching VictoriaMetrics' own write convention)
+
+    Safe to run every startup: if nothing is broken, it's a no-op. Does not
+    descend into cache/, snapshots/, tmp/, or txn/ directories - snapshots in
+    particular are read-only backups and must never be mutated.
     """
     import json
     import os
     import shutil
     import sys
 
-    def find_indexdb_parts_json_files(root):
-        indexdb_root = os.path.join(root, "indexdb")
-        if not os.path.isdir(indexdb_root):
-            return
-        for dirpath, _dirnames, filenames in os.walk(indexdb_root):
+    SKIP_DIR_NAMES = {"cache", "snapshots", "tmp", "txn"}
+
+    def find_parts_json_files(root):
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirnames[:] = [d for d in dirnames if d not in SKIP_DIR_NAMES]
             if "parts.json" in filenames:
                 yield os.path.join(dirpath, "parts.json")
 
-    def is_part_valid(table_dir, part_id):
-        meta_path = os.path.join(table_dir, part_id, "metadata.json")
+    def is_part_valid(part_dir):
+        meta_path = os.path.join(part_dir, "metadata.json")
         if not os.path.isfile(meta_path):
             return False
         try:
@@ -56,35 +67,82 @@ data:
             os.fsync(f.fileno())
         os.replace(tmp_path, path)
 
-    def fix_table(parts_json_path):
-        table_dir = os.path.dirname(parts_json_path)
-        try:
-            with open(parts_json_path) as f:
-                parts = json.load(f)
-        except (ValueError, OSError) as e:
-            print(f"[skip] cannot read {parts_json_path}: {e} (leaving untouched)")
-            return 0
+    def sibling_dir(table_dir, from_name, to_name):
+        """data/small/2026_11 -> data/big/2026_11 (swap the rightmost matching segment)."""
+        segments = table_dir.rstrip(os.sep).split(os.sep)
+        for i in range(len(segments) - 1, -1, -1):
+            if segments[i] == from_name:
+                segments[i] = to_name
+                return os.sep.join(segments)
+        return None
 
-        if not isinstance(parts, list):
-            print(f"[skip] {parts_json_path}: expected a JSON array, got {type(parts).__name__} (leaving untouched)")
-            return 0
-
-        broken = [p for p in parts if not is_part_valid(table_dir, p)]
-        if not broken:
-            return 0
-
-        print(f"[fix] {parts_json_path}: {len(broken)}/{len(parts)} parts corrupted: {broken}")
-
+    def remove_broken(base_dir, part_ids):
+        broken = []
+        for part_id in part_ids:
+            if base_dir is None or not is_part_valid(os.path.join(base_dir, part_id)):
+                broken.append(part_id)
         for part_id in broken:
-            part_dir = os.path.join(table_dir, part_id)
+            part_dir = os.path.join(base_dir, part_id)
             if os.path.isdir(part_dir):
                 shutil.rmtree(part_dir)
                 print(f"  removed {part_dir}")
+        return broken
 
+    def fix_indexdb_table(parts_json_path, parts):
+        table_dir = os.path.dirname(parts_json_path)
+        broken = remove_broken(table_dir, parts)
+        if not broken:
+            return 0
+        print(f"[fix] {parts_json_path}: {len(broken)}/{len(parts)} parts corrupted: {broken}")
         new_parts = [p for p in parts if p not in broken]
         atomic_write_json(parts_json_path, new_parts)
         print(f"  patched {parts_json_path}: {len(parts)} -> {len(new_parts)} parts")
         return len(broken)
+
+    def fix_data_partition(parts_json_path, manifest):
+        small_dir = os.path.dirname(parts_json_path)
+        big_dir = sibling_dir(small_dir, "small", "big")
+
+        small_ids = manifest.get("Small", [])
+        big_ids = manifest.get("Big", [])
+
+        broken_small = remove_broken(small_dir, small_ids)
+        if big_ids and big_dir is None:
+            print(f"[warn] {parts_json_path}: cannot locate sibling 'big' dir for {small_dir}, "
+                  f"leaving {len(big_ids)} Big entries untouched")
+            broken_big = []
+        else:
+            broken_big = remove_broken(big_dir, big_ids)
+
+        broken = broken_small + broken_big
+        if not broken:
+            return 0
+
+        print(f"[fix] {parts_json_path}: Small {len(broken_small)}/{len(small_ids)} corrupted, "
+              f"Big {len(broken_big)}/{len(big_ids)} corrupted")
+        manifest = dict(manifest)
+        manifest["Small"] = [p for p in small_ids if p not in broken_small]
+        manifest["Big"] = [p for p in big_ids if p not in broken_big]
+        atomic_write_json(parts_json_path, manifest)
+        print(f"  patched {parts_json_path}: Small {len(small_ids)}->{len(manifest['Small'])}, "
+              f"Big {len(big_ids)}->{len(manifest['Big'])}")
+        return len(broken)
+
+    def fix_manifest(parts_json_path):
+        try:
+            with open(parts_json_path) as f:
+                data = json.load(f)
+        except (ValueError, OSError) as e:
+            print(f"[skip] cannot read {parts_json_path}: {e} (leaving untouched)")
+            return 0
+
+        if isinstance(data, list):
+            return fix_indexdb_table(parts_json_path, data)
+        if isinstance(data, dict) and ("Small" in data or "Big" in data):
+            return fix_data_partition(parts_json_path, data)
+
+        print(f"[skip] {parts_json_path}: unrecognized parts.json shape ({type(data).__name__}), leaving untouched")
+        return 0
 
     def main():
         root = sys.argv[1] if len(sys.argv) > 1 else "/victoria-metrics-data"
@@ -93,8 +151,8 @@ data:
             return 0
 
         total_fixed = 0
-        for parts_json_path in find_indexdb_parts_json_files(root):
-            total_fixed += fix_table(parts_json_path)
+        for parts_json_path in find_parts_json_files(root):
+            total_fixed += fix_manifest(parts_json_path)
 
         print(f"[done] total corrupted parts removed: {total_fixed}")
         return 0
