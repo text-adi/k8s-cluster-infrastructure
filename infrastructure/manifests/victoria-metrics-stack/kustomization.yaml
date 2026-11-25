@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - vm-agent.yaml
   - vm-storage.yaml
+  - vm-storage-fix-indexdb-configmap.yaml
   - vm-node-scrape.yaml
   - vm-static-scrape.yaml

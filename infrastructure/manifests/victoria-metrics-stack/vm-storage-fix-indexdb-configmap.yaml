@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vmsingle-fix-indexdb
+  namespace: monitoring
+data:
+  fix-indexdb.py: |
+    #!/usr/bin/env python3
+    """
+    Repairs corrupted VictoriaMetrics mergeset indexdb tables before the main
+    container starts. Runs as an initContainer against the same PVC as vmsingle.
+
+    Finds every parts.json (= one mergeset "table" directory), checks each
+    referenced part's metadata.json is valid JSON, and for any broken part:
+      - removes the part directory
+      - removes its entry from parts.json (atomic write, same convention VM uses)
+
+    Safe to run every startup: if nothing is broken, it's a no-op.
+    """
+    import json
+    import os
+    import shutil
+    import sys
+
+    def find_parts_json_files(root):
+        for dirpath, _dirnames, filenames in os.walk(root):
+            if "parts.json" in filenames:
+                yield os.path.join(dirpath, "parts.json")
+
+    def is_part_valid(table_dir, part_id):
+        meta_path = os.path.join(table_dir, part_id, "metadata.json")
+        if not os.path.isfile(meta_path):
+            return False
+        try:
+            with open(meta_path) as f:
+                json.load(f)
+            return True
+        except (ValueError, OSError):
+            return False
+
+    def atomic_write_json(path, data):
+        tmp_path = path + ".tmp"
+        with open(tmp_path, "w") as f:
+            json.dump(data, f)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, path)
+
+    def fix_table(parts_json_path):
+        table_dir = os.path.dirname(parts_json_path)
+        try:
+            with open(parts_json_path) as f:
+                parts = json.load(f)
+        except (ValueError, OSError) as e:
+            print(f"[skip] cannot read {parts_json_path}: {e} (leaving untouched)")
+            return 0
+
+        broken = [p for p in parts if not is_part_valid(table_dir, p)]
+        if not broken:
+            return 0
+
+        print(f"[fix] {parts_json_path}: {len(broken)}/{len(parts)} parts corrupted: {broken}")
+
+        for part_id in broken:
+            part_dir = os.path.join(table_dir, part_id)
+            if os.path.isdir(part_dir):
+                shutil.rmtree(part_dir)
+                print(f"  removed {part_dir}")
+
+        new_parts = [p for p in parts if p not in broken]
+        atomic_write_json(parts_json_path, new_parts)
+        print(f"  patched {parts_json_path}: {len(parts)} -> {len(new_parts)} parts")
+        return len(broken)
+
+    def main():
+        root = sys.argv[1] if len(sys.argv) > 1 else "/victoria-metrics-data"
+        if not os.path.isdir(root):
+            print(f"[warn] storage path {root} does not exist yet, nothing to do")
+            return 0
+
+        total_fixed = 0
+        for parts_json_path in find_parts_json_files(root):
+            total_fixed += fix_table(parts_json_path)
+
+        print(f"[done] total corrupted parts removed: {total_fixed}")
+        return 0
+
+    if __name__ == "__main__":
+        sys.exit(main())

@@ -5,7 +5,22 @@ metadata:
   namespace: monitoring
 spec:
   retentionPeriod: "30d"
+
   storage:
     resources:
       requests:
         storage: 20Gi
+  volumes:
+    - name: fix-indexdb-script
+      configMap:
+        name: vmsingle-fix-indexdb
+        defaultMode: 0o555
+  initContainers:
+    - name: fix-corrupted-indexdb
+      image: python:3.12-alpine
+      command: ["python3", "/scripts/fix-indexdb.py", "/victoria-metrics-data"]
+      volumeMounts:
+        - name: data
+          mountPath: /victoria-metrics-data
+        - name: fix-indexdb-script
+          mountPath: /scripts
